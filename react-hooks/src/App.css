@@ -1,0 +1,10 @@
+body {
+    width: 100%;
+    display: block;
+}
+
+body > * {
+    margin: 0 auto;
+    width: fit-content;
+    text-align: center;
+}
