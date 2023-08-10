@@ -1,7 +1,9 @@
-const App = () => {
-  return (
-    <div>App</div>
-  )
-}
+import { useState } from "react";
 
-export default App
+const App = () => {
+    
+
+    return <div>App</div>;
+};
+
+export default App;
