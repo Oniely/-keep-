@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Container } from "react-bootstrap";
 import { List } from "./components/List";
 import { AddTodo } from "./components/AddTodo";
@@ -10,7 +10,7 @@ export interface Todo {
     status: string;
 }
 
-const App = () => {
+const App: React.FC<Todo> = () => {
     const [filter, setFilter] = useState("All");
     const [todo, setTodo] = useState<Todo[]>([]);
 

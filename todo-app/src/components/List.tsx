@@ -6,7 +6,7 @@ interface ListProp {
     filter?: string;
 }
 
-export const List = ({ task, filter }: ListProp) => {
+export const List: React.FC<ListProp> = ({ task, filter }) => {
     const [checked, setChecked] = useState(true);
 
     const filteredTask = task.filter((item) => {

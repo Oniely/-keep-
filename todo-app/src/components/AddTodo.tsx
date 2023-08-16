@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Button } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
 import { Todo } from "../App";
@@ -7,15 +7,16 @@ interface TaskProp {
     onAddTodo: (newTodo: Todo) => void;
 }
 
-export const AddTodo = ({ onAddTodo }: TaskProp) => {
+export const AddTodo: React.FC<TaskProp> = ({ onAddTodo }) => {
     const [show, setShow] = useState(false);
     const [title, setTitle] = useState("");
     const [status, setStatus] = useState("Incomplete");
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
-
+    
     const handleClick = () => {
+        
         const newTask: Todo = {
             id: crypto.randomUUID(),
             title,
@@ -24,12 +25,16 @@ export const AddTodo = ({ onAddTodo }: TaskProp) => {
 
         onAddTodo(newTask);
 
+        setTitle("")
+
         handleClose();
     };
 
-    function handleEnterKey(e) {
+    function handleEnterKey(e: KeyboardEvent<HTMLFormElement>) {
         if (e.key === "Enter") {
             handleClick();
+        } else if(e.key === "Esc") {
+            handleClose();
         }
     }
 
