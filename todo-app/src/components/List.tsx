@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "../App";
 
 interface ListProp {
@@ -7,20 +7,49 @@ interface ListProp {
 }
 
 export const List: React.FC<ListProp> = ({ task, filter }) => {
-    const [checked, setChecked] = useState(true);
+    const [filteredTask, setFilteredTask] = useState<Todo[]>([]);
 
-    const filteredTask = task.filter((item) => {
-        if (filter === "All") {
-            return true;
-        } else {
-            return item.status === filter;
+    useEffect(() => {
+        const storedData = localStorage.getItem("tasks");
+        const parsedData: Todo[] = storedData ? JSON.parse(storedData) : [];
+
+        const updatedFilteredTask = parsedData.filter((item) => {
+            if (filter === "All") {
+                return true;
+            } else {
+                return item.status === filter;
+            }
+        });
+        setFilteredTask(updatedFilteredTask);
+    }, [task, filter]);
+
+    const removeTask = (id: string) => {
+        setFilteredTask((prevTasks) =>
+            prevTasks.filter((task) => task.id !== id)
+        );
+
+        const storedData = localStorage.getItem("tasks");
+
+        if (storedData) {
+            const parsedData: Todo[] = JSON.parse(storedData);
+
+            // Find the index of the task with the provided id in the parsed data
+            const taskIndex = parsedData.findIndex((task) => task.id === id);
+
+            if (taskIndex !== -1) {
+                // Remove the task from the parsed data
+                parsedData.splice(taskIndex, 1);
+
+                // Update the stored data in localStorage
+                localStorage.setItem("tasks", JSON.stringify(parsedData));
+            }
         }
-    });
+    };
 
     return (
         <>
             <ul className="list-group d-flex justify-content-center gap-3">
-                {filteredTask.length <= 0 && (
+                {filteredTask.length === 0 && (
                     <div className="text-center p-3">
                         <span className="fs-3" style={{ color: "gray" }}>
                             No Todo
@@ -47,14 +76,47 @@ export const List: React.FC<ListProp> = ({ task, filter }) => {
                                         item.status === "Completed" && true
                                     }
                                     onChange={() => {
-                                        if (item.status === "Completed") {
-                                            item.status = "Incomplete";
-                                        } else if (
-                                            item.status === "Incomplete"
-                                        ) {
-                                            item.status = "Completed";
+                                        const updatedStatus =
+                                            item.status === "Completed"
+                                                ? "Incomplete"
+                                                : "Completed";
+                                        const updatedTasks = filteredTask.map(
+                                            (task) => {
+                                                if (task.id === item.id) {
+                                                    return {
+                                                        ...task,
+                                                        status: updatedStatus,
+                                                    };
+                                                }
+                                                return task;
+                                            }
+                                        );
+
+                                        // Update the state
+                                        setFilteredTask(updatedTasks);
+
+                                        // Update the status in localStorage
+                                        const storedData =
+                                            localStorage.getItem("tasks");
+                                        if (storedData) {
+                                            const parsedData: Todo[] =
+                                                JSON.parse(storedData);
+                                            const updatedData = parsedData.map(
+                                                (task) => {
+                                                    if (task.id === item.id) {
+                                                        return {
+                                                            ...task,
+                                                            status: updatedStatus,
+                                                        };
+                                                    }
+                                                    return task;
+                                                }
+                                            );
+                                            localStorage.setItem(
+                                                "tasks",
+                                                JSON.stringify(updatedData)
+                                            );
                                         }
-                                        setChecked(!checked);
                                     }}
                                 />
                                 <label
@@ -69,7 +131,11 @@ export const List: React.FC<ListProp> = ({ task, filter }) => {
                                 </label>
                             </div>
                             <div className="d-flex justify-content-center align-items-center gap-2">
-                                <button className="btn btn-sm" id="liBtn">
+                                <button
+                                    className="btn btn-sm"
+                                    id="liBtn"
+                                    onClick={() => removeTask(item.id)}
+                                >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         height="1em"

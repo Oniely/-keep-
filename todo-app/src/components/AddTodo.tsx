@@ -14,26 +14,36 @@ export const AddTodo: React.FC<TaskProp> = ({ onAddTodo }) => {
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
-    
+
+    const saveData = (newTask: Todo) => {
+        const existingDataString = localStorage.getItem('tasks');
+        const existingData = existingDataString ? JSON.parse(existingDataString) : [];
+
+        existingData.push(newTask);
+
+        const jsonString = JSON.stringify(existingData);
+        localStorage.setItem("tasks", jsonString);
+    };
+
     const handleClick = () => {
-        
+        if (title.trim() === "") return;
+
         const newTask: Todo = {
             id: crypto.randomUUID(),
             title,
             status,
         };
-
         onAddTodo(newTask);
+        saveData(newTask);
 
-        setTitle("")
-
+        setTitle("");
         handleClose();
     };
 
     function handleEnterKey(e: KeyboardEvent<HTMLFormElement>) {
         if (e.key === "Enter") {
             handleClick();
-        } else if(e.key === "Esc") {
+        } else if (e.key === "Esc") {
             handleClose();
         }
     }
@@ -60,10 +70,10 @@ export const AddTodo: React.FC<TaskProp> = ({ onAddTodo }) => {
                             <input
                                 type="text"
                                 id="addTodo"
+                                autoFocus
                                 onChange={(e) => {
                                     setTitle(e.target.value);
                                 }}
-                                autoFocus
                                 style={{
                                     padding: "5px",
                                     margin: "5px 0",
