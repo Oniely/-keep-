@@ -80,6 +80,7 @@ export const List: React.FC<ListProp> = ({ task, filter }) => {
                                             item.status === "Completed"
                                                 ? "Incomplete"
                                                 : "Completed";
+
                                         const updatedTasks = filteredTask.map(
                                             (task) => {
                                                 if (task.id === item.id) {
@@ -91,7 +92,7 @@ export const List: React.FC<ListProp> = ({ task, filter }) => {
                                                 return task;
                                             }
                                         );
-
+                                        
                                         // Update the state
                                         setFilteredTask(updatedTasks);
 
