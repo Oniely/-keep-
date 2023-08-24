@@ -8,7 +8,7 @@ interface ListProp {
 
 export const List: React.FC<ListProp> = ({ task, filter }) => {
     const [filteredTask, setFilteredTask] = useState<Todo[]>([]);
-
+ 
     useEffect(() => {
         const storedData = localStorage.getItem("tasks");
         const parsedData: Todo[] = storedData ? JSON.parse(storedData) : [];
