@@ -10,16 +10,16 @@ interface ForecastProps {
 
 export const Forecast: React.FC<ForecastProps> = ({ data }) => {
     return (
-        <div className="flex flex-col items-center text-center h-full pt-14 gap-14">
-            <div className="flex gap-2">
-                <div className="lg:w-13 sm:w-10">
+        <div className="flex flex-col items-center text-center h-full pt-14 gap-20">
+            <div className="flex gap-1">
+                <div className="lg:w-14 sm:w-10">
                     <img
                         src={`http://openweathermap.org/img/w/${data?.icon}.png`}
                         alt="wicon"
-                        className=" w-full h-full"
+                        className=" w-full h-full object-contain"
                     />
                 </div>
-                <div>
+                <div className="shrink-0">
                     <h3 className="lg:text-2xl sm:text-lg">Today</h3>
                     <p className="lg:text-xs sm:text-[12px] text-gray-300">{`${currentDay}, ${dayNumber}, ${currentMonth}`}</p>
                 </div>
@@ -32,9 +32,12 @@ export const Forecast: React.FC<ForecastProps> = ({ data }) => {
                 <p className="text-md tracking-[1px] leading-6 text-gray-300">
                     {data?.city}, {data?.country}
                 </p>
-                <p className="text-xs leading-8 text-gray-300 flex gap-1">
-                    <span>Feels Like {data?.feelsLike}</span>•
-                    <span>Sunset {data?.timezone}</span>
+                <p className="text-xs leading-8 text-gray-300 flex gap-2">
+                    <span>Feels Like {data?.feelsLike}°</span>•
+                    <span>Sunset {data?.sunsetTime}</span>
+                </p>
+                <p className="text-xs leading-3 text-gray-300 flex gap-1 justify-center">
+                    <span>{data?.weatherDescription} </span>
                 </p>
             </div>
 
@@ -69,7 +72,9 @@ export const Forecast: React.FC<ForecastProps> = ({ data }) => {
                             alt=""
                         />
                     </div>
-                    <p className="sm:text-xs lg:text-sm">{data?.pressure} hPa</p>
+                    <p className="sm:text-xs lg:text-sm">
+                        {data?.pressure} hPa
+                    </p>
                 </div>
             </div>
         </div>

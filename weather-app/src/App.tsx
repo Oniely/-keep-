@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { SearchPlaces } from "./components/SearchPlaces";
 import { Forecast } from "./components/Forecast";
 import axios from "axios";
-import { capitalCity } from "./datas/city.ts";
+import { capitalCity } from "./datas/city";
 
 export interface WeatherDataProps {
     temp: number;
@@ -13,71 +13,90 @@ export interface WeatherDataProps {
     humidity: number;
     pressure: number;
 
-    timezone: number;
-    sunsetTime: Date;
-    
+    weatherDescription: string;
     icon: string;
     city: string;
     country: string;
+    sunsetTime: string;
 }
 
 const App: React.FC = () => {
     const API_KEY: string = "a0708cd146029da8679dfa66033438a1";
 
-    const [search, setSearch] = useState("");
+    const [searchCity, setSearchCity] = useState("");
     const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(
         null
     );
+    
+    function timestampToTime(x: number) {
+        const date = new Date(x * 1000);
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const formatTime = hours + ":" + minutes;
+        return formatTime;
+    }
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setSearch(
-            e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
-        );
+        const value: string =
+            e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+
+        setSearchCity(value);
     }
 
     useEffect(() => {
-        if (capitalCity.includes(search)) {
-            axios
-                .get(
-                    `https://api.openweathermap.org/data/2.5/weather?q=${search}&appid=${API_KEY}&units=metric`
-                )
-                .then((res) => {
-                    const data = res.data;
-                    const unix = data.sys.sunset;
-                    const sunset: Date = new Date(unix * 1000);
+        const fetchData = async () => {
+            if (capitalCity.includes(searchCity)) {
+                try {
+                    const geoResponse = await axios.get(
+                        `http://api.openweathermap.org/geo/1.0/direct?q=${searchCity}&appid=${API_KEY}`
+                    );
 
-                    const dataSet: WeatherDataProps = {
+                    const geoData = geoResponse.data;
+
+                    const lat = geoData[0].lat;
+                    const lon = geoData[0].lon;
+
+                    const weatherResponse = await axios.get(
+                        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+                    );
+
+                    const data = weatherResponse.data;
+
+                    console.log(data);
+
+                    const dataSet = {
                         temp: Math.ceil(data.main.temp),
                         feelsLike: Math.round(data.main.feels_like),
                         windSpeed: data.wind.speed,
                         windDegrees: data.wind.deg,
                         humidity: data.main.humidity,
                         pressure: data.main.pressure,
-
-                        timezone: data.timezone / 3600,
-                        sunsetTime: sunset,
-
                         icon: data.weather[0].icon,
-                        city: data.name,
+                        city: searchCity,
                         country: data.sys.country,
+                        weatherDescription: data.weather[0].description,
+                        sunsetTime: timestampToTime(data.sys.sunset),
                     };
-                    console.log(data);
-                    setWeatherData(dataSet);
-                });
-        }
-    }, [search]);
 
+                    setWeatherData(dataSet);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
+        };
+
+        fetchData();
+
+    }, [searchCity]);
+    
     return (
-        <Container
-            className="h-screen w-full mx-auto px-4 py-4"
-            fluid
-        >
+        <Container className="h-screen w-full mx-auto px-4 py-4" fluid>
             <Row className="flex h-full w-full rounded-3xl bg-whiteIsh">
                 <Col className="w-full">
-                    <SearchPlaces value={search} onChange={handleChange} />
+                    <SearchPlaces value={searchCity} onChange={handleChange} />
                 </Col>
 
-                <Col className="lg:w-[40rem] sm:w-[25rem] h-full bg-[#11103a] rounded-e-3xl text-white">
+                <Col className="lg:w-[40rem] sm:w-[25rem] h-full bg-[#1a1a52] rounded-e-3xl text-white">
                     <Forecast data={weatherData} />
                 </Col>
             </Row>

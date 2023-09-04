@@ -21,7 +21,7 @@ export const SearchPlaces: React.FC<SearchPlacesProps> = ({
                         value={value}
                         list="capitalCity"
                         className="block rounded-2xl border-0 lg:w-[18rem] md:w-[13rem] sm:w-[10rem] px-4 py-2 text-gray-900 shadow-md ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        placeholder="Search a capital city"
+                        placeholder="Search your city"
                     />
 
                     <datalist className="mb-4" id="capitalCity">
