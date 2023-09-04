@@ -1,0 +1,26 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,regular,italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #83b7f1;
+}
+
+.weather-temp::after {
+    content: "℃";
+    position: absolute;
+    font-size: 1.6rem;
+    font-family: Tahoma, sans-serif;
+    color: rgb(180 213 219 / var(--tw-text-opacity));
+}
+
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}

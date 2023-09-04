@@ -12,7 +12,7 @@ export const List: React.FC<ListProp> = ({ task, filter }) => {
     useEffect(() => {
         const storedData = localStorage.getItem("tasks");
         const parsedData: Todo[] = storedData ? JSON.parse(storedData) : [];
-
+        
         const updatedFilteredTask = parsedData.filter((item) => {
             if (filter === "All") {
                 return true;
