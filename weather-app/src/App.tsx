@@ -1,103 +1,140 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { SearchPlaces } from "./components/SearchPlaces";
-import { Forecast } from "./components/Forecast";
+import { Weather } from "./components/Weather";
 import axios from "axios";
-import { capitalCity } from "./datas/city";
 
 export interface WeatherDataProps {
+    icon: string;
+    date: string;
+
+    city: string;
+
     temp: number;
     feelsLike: number;
+    dt: string;
+    weatherDescription: string;
+
     windSpeed: number;
-    windDegrees: number;
     humidity: number;
     pressure: number;
-
-    weatherDescription: string;
-    icon: string;
-    city: string;
-    country: string;
-    sunsetTime: string;
 }
 
-const App: React.FC = () => {
-    const API_KEY: string = "a0708cd146029da8679dfa66033438a1";
+const API_KEY: string = "a0708cd146029da8679dfa66033438a1";
+const TIME_API_KEY: string = "6I39QXGUAMVL";
 
-    const [searchCity, setSearchCity] = useState("");
+const App: React.FC = () => {
     const [weatherData, setWeatherData] = useState<WeatherDataProps | null>(
         null
     );
+
+    const [lat, setLat] = useState("");
+    const [lon, setLon] = useState("");
+    const [city, setCity] = useState("");
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handleChange(searchData: any) {
+        const [latitude, longitude] = searchData.value.split(" ");
+        const cityName = searchData.label;
+
+        setLat(latitude);
+        setLon(longitude);
+        setCity(cityName);
+    }
+
     
-    function timestampToTime(x: number) {
-        const date = new Date(x * 1000);
-        const hours = date.getHours().toString().padStart(2, "0");
-        const minutes = date.getMinutes().toString().padStart(2, "0");
-        const formatTime = hours + ":" + minutes;
-        return formatTime;
-    }
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const value: string =
-            e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
-
-        setSearchCity(value);
-    }
 
     useEffect(() => {
         const fetchData = async () => {
-            if (capitalCity.includes(searchCity)) {
-                try {
-                    const geoResponse = await axios.get(
-                        `http://api.openweathermap.org/geo/1.0/direct?q=${searchCity}&appid=${API_KEY}`
-                    );
+            try {
+                const weatherResponse = await axios.get(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+                );
 
-                    const geoData = geoResponse.data;
+                const data = weatherResponse.data;
 
-                    const lat = geoData[0].lat;
-                    const lon = geoData[0].lon;
+                console.log(data);
 
-                    const weatherResponse = await axios.get(
-                        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-                    );
+                const timeResponse = await axios.get(
+                    `https://api.timezonedb.com/v2.1/get-time-zone?key=${TIME_API_KEY}&format=json&by=position&lat=${lat}&lng=${lon}`
+                );
 
-                    const data = weatherResponse.data;
+                const timeData = timeResponse.data;
 
-                    console.log(data);
+                console.log(timeData);
 
-                    const dataSet = {
-                        temp: Math.ceil(data.main.temp),
-                        feelsLike: Math.round(data.main.feels_like),
-                        windSpeed: data.wind.speed,
-                        windDegrees: data.wind.deg,
-                        humidity: data.main.humidity,
-                        pressure: data.main.pressure,
-                        icon: data.weather[0].icon,
-                        city: searchCity,
-                        country: data.sys.country,
-                        weatherDescription: data.weather[0].description,
-                        sunsetTime: timestampToTime(data.sys.sunset),
-                    };
+                const dateTime = new Date(timeData.formatted);
 
-                    setWeatherData(dataSet);
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
+                const date = dateTime.toLocaleDateString();
+                const time = dateTime.toLocaleTimeString();
+
+                const timeWithSeconds = time;
+
+                const currentDate = formatDateString(date);
+                const currentTime = timeWithSeconds.replace(/:\d{2} /, " ");
+
+                const dataSet = {
+                    icon: data.weather[0].icon,
+                    date: currentDate,
+
+                    city: city,
+
+                    temp: Math.ceil(data.main.temp),
+                    feelsLike: Math.round(data.main.feels_like),
+                    dt: currentTime,
+                    weatherDescription: data.weather[0].description,
+
+                    windSpeed: data.wind.speed,
+                    humidity: data.main.humidity,
+                    pressure: data.main.pressure,
+                };
+
+                setWeatherData(dataSet);
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
+    }, [lat,lon,city])
 
-    }, [searchCity]);
-    
+    function formatDateString(dateString: string) {
+        const dateParts = dateString.split("/");
+        const month = parseInt(dateParts[0], 10);
+        const day = parseInt(dateParts[1], 10);
+        const year = parseInt(dateParts[2], 10);
+
+        const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const monthName = monthNames[month - 1];
+        const formattedDate = `${monthName} ${day}, ${year}`;
+
+        return formattedDate;
+    }
+
     return (
         <Container className="h-screen w-full mx-auto px-4 py-4" fluid>
             <Row className="flex h-full w-full rounded-3xl bg-whiteIsh">
                 <Col className="w-full">
-                    <SearchPlaces value={searchCity} onChange={handleChange} />
+                    <SearchPlaces
+                        onSearchChange={handleChange}
+                    />
                 </Col>
 
                 <Col className="lg:w-[40rem] sm:w-[25rem] h-full bg-[#1a1a52] rounded-e-3xl text-white">
-                    <Forecast data={weatherData} />
+                    <Weather data={weatherData} />
                 </Col>
             </Row>
         </Container>

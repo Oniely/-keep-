@@ -1,42 +1,68 @@
-import { capitalCity } from "../datas/city";
+// import { capitalCity } from "../datas/city";
+import { useState } from "react";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { geoApiOptions, GEO_API_URL } from "../utils/api";
 
 interface SearchPlacesProps {
-    value: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onSearchChange: (searchData: string) => void;
 }
 
 export const SearchPlaces: React.FC<SearchPlacesProps> = ({
-    onChange,
-    value,
+    onSearchChange,
 }) => {
+    const [search, setSearch] = useState("");
+
+    function loadOptions(
+        inputValue: string
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): any {
+        return fetch(
+            `${GEO_API_URL}/cities?minPopulation=100000&namePrefix=${inputValue}`,
+            geoApiOptions
+        )
+            .then((response) => response.json())
+            .then((response) => {
+                return {
+                    options: response.data.map(
+                        (city: {
+                            latitude: string;
+                            longitude: string;
+                            name: string;
+                            countryCode: string;
+                        }) => {
+                            return {
+                                value: `${city.latitude} ${city.longitude}`,
+                                label: `${city.name}, ${city.countryCode}`,
+                            };
+                        }
+                    ),
+                };
+            })
+            .catch((err) => console.error(err));
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handleOnChange(searchData: any) {
+        setSearch(searchData);
+        onSearchChange(searchData);
+    }
+
     return (
         <>
             <div className="w-full flex pl-8 pt-10 pr-4">
-                <h1 className="lg:text-4xl mr-12 text-center sm:text-2xl text-xl whitespace-nowrap">Weather Forecasts</h1>
+                <h1 className="lg:text-4xl mr-12 text-center sm:text-2xl text-xl whitespace-nowrap">
+                    Weather Forecasts
+                </h1>
 
                 <div className="text-container">
-                    <input
-                        type="text"
-                        onChange={onChange}
-                        value={value}
-                        list="capitalCity"
-                        className="block rounded-2xl border-0 lg:w-[18rem] md:w-[13rem] sm:w-[10rem] px-4 py-2 text-gray-900 shadow-md ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        placeholder="Search your city"
+                    <AsyncPaginate
+                        placeholder="Search for places"
+                        debounceTimeout={600}
+                        value={search}
+                        onChange={handleOnChange}
+                        loadOptions={loadOptions}
+                        className="w-72"
                     />
-
-                    <datalist className="mb-4" id="capitalCity">
-                        {capitalCity.map((city) => {
-                            if (city === null) return;
-
-                            const id: string = crypto.randomUUID()
-
-                            return (
-                                <option key={id} value={city}>
-                                    {city}
-                                </option>
-                            );
-                        })}
-                    </datalist>
                 </div>
             </div>
         </>
