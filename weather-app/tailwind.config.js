@@ -5,13 +5,11 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
         "./src/App.tsx",
         "./src/components/SearchPlaces.tsx",
+        "./src/components/Weather.tsx",
         "./src/components/Forecast.tsx",
     ],
     theme: {
         extend: {
-            colors: {
-                'whiteIsh': '#f2fbff',
-            }
         },
     },
     plugins: [],

@@ -1,4 +1,3 @@
-// import { capitalCity } from "../datas/city";
 import { useState } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { geoApiOptions, GEO_API_URL } from "../utils/api";
@@ -17,7 +16,7 @@ export const SearchPlaces: React.FC<SearchPlacesProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
         return fetch(
-            `${GEO_API_URL}/cities?minPopulation=100000&namePrefix=${inputValue}`,
+            `${GEO_API_URL}/cities?minPopulation=1000000&namePrefix=${inputValue}`,
             geoApiOptions
         )
             .then((response) => response.json())
@@ -49,21 +48,19 @@ export const SearchPlaces: React.FC<SearchPlacesProps> = ({
 
     return (
         <>
-            <div className="w-full flex pl-8 pt-10 pr-4">
+            <div className="w-full flex pl-8 pt-10">
                 <h1 className="lg:text-4xl mr-12 text-center sm:text-2xl text-xl whitespace-nowrap">
                     Weather Forecasts
                 </h1>
 
-                <div className="text-container">
-                    <AsyncPaginate
-                        placeholder="Search for places"
-                        debounceTimeout={600}
-                        value={search}
-                        onChange={handleOnChange}
-                        loadOptions={loadOptions}
-                        className="w-72"
-                    />
-                </div>
+                <AsyncPaginate
+                    placeholder="Search for places"
+                    debounceTimeout={600}
+                    value={search}
+                    onChange={handleOnChange}
+                    loadOptions={loadOptions}
+                    className="w-72 text-lg z-20"
+                />
             </div>
         </>
     );

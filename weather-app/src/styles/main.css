@@ -4,21 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+*, *::after, *::before {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
 body {
     background: #83b7f1;
-}
-
-.weather-temp::after {
-    content: "℃";
-    position: absolute;
-    font-size: 1.6rem;
-    font-family: Tahoma, sans-serif;
-    color: rgb(180 213 219 / var(--tw-text-opacity));
 }
 
 input::-webkit-calendar-picker-indicator {
