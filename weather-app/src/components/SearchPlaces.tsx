@@ -48,8 +48,8 @@ export const SearchPlaces: React.FC<SearchPlacesProps> = ({
 
     return (
         <>
-            <div className="w-full flex pl-8 pt-10">
-                <h1 className="lg:text-4xl mr-12 text-center sm:text-2xl text-xl whitespace-nowrap">
+            <div className="w-full flex px-6 pt-9">
+                <h1 className="lg:text-4xl mr-12 text-center md:text-3xl whitespace-nowrap hidden lg:block md:block">
                     Weather Forecasts
                 </h1>
 
@@ -59,7 +59,7 @@ export const SearchPlaces: React.FC<SearchPlacesProps> = ({
                     value={search}
                     onChange={handleOnChange}
                     loadOptions={loadOptions}
-                    className="w-72 text-lg z-20"
+                    className="w-full lg:w-72 md:w-64 md:text-lg text-xl z-20 shrink-0"
                 />
             </div>
         </>

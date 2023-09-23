@@ -37,7 +37,7 @@ function formatDateString(dateString: string) {
 export const Weather: React.FC<WeatherProps> = ({ data }) => {
 
     return (
-        <div className="flex flex-col items-center justify-between text-center w-full h-full px-18 py-16">
+        <div className="flex flex-col items-center justify-between text-center w-full h-full lg:px-18 lg:py-16 px-10 py-10 gap-8">
             <div className="flex gap-1">
                 <div className="lg:w-[3.6rem] sm:w-10">
                     {
@@ -62,10 +62,12 @@ export const Weather: React.FC<WeatherProps> = ({ data }) => {
                 </div>
                 <div>
                     {data?.date ? (
-                        <p className="lg:text-xs sm:text-[12px] text-gray-300">
-                            <h3 className="lg:text-2xl sm:text-lg">Today</h3>
-                            {formatDateString(data.date)}
-                        </p>
+                        <div className="lg:text-xs sm:text-[12px] text-gray-300">
+                            <h3 className="lg:text-2xl text-xl">Today</h3>
+                            <span className="md:text-[12px] text-[13px]">
+                                {formatDateString(data.date)}
+                            </span>
+                        </div>
                     ) : (
                         ""
                     )}
@@ -74,9 +76,9 @@ export const Weather: React.FC<WeatherProps> = ({ data }) => {
 
             <div>
                 {data?.temp && (
-                    <h1 className="weather-temp lg:text-8xl sm:text-6xl font-light">
+                    <h1 className="weather-temp lg:text-8xl text-6xl font-light">
                         {data.temp}
-                        <span className="font-sans lg:text-2xl sm:text-xl align-text-top absolute">
+                        <span className="font-sans lg:text-2xl text-xl align-text-top absolute">
                             &#8451;
                         </span>
                     </h1>
@@ -96,40 +98,43 @@ export const Weather: React.FC<WeatherProps> = ({ data }) => {
             </div>
 
             {data?.windSpeed && data?.humidity && data?.pressure ? (
-                <div className="flex justify-evenly w-full">
-                    <div className="flex items-center gap-2">
-                        <div className="lg:w-8 sm:w-6">
+                <div className="flex justify-evenly w-full gap-6 px-4">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="lg:w-8 w-6">
                             <img
                                 className="w-full h-full object-contain"
                                 src={wind_speed_icon}
                                 alt=""
+                                title="Wind Speed"
                             />
                         </div>
-                        <p className="sm:text-xs lg:text-sm">
+                        <p className="text-[14px] sm:text-[15px]">
                             {data?.windSpeed} m/s
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="lg:w-8 sm:w-6">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="lg:w-8 w-6">
                             <img
                                 className="w-full h-full object-contain"
                                 src={humidityIcon}
                                 alt=""
+                                title="Humidity"
                             />
                         </div>
-                        <p className="sm:text-xs lg:text-sm">
+                        <p className="text-[14px] sm:text-[15px]">
                             {data?.humidity} %
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="lg:w-8 sm:w-6">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="lg:w-8 w-6">
                             <img
                                 className="w-full h-full object-contain"
                                 src={pressureIcon}
                                 alt=""
+                                title="Air Pressure"
                             />
                         </div>
-                        <p className="sm:text-xs lg:text-sm">
+                        <p className="text-[14px] sm:text-[15px]">
                             {data?.pressure} hPa
                         </p>
                     </div>
